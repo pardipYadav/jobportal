@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Environment Variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# VSCode or IDE config
+.vscode/
+.idea/
+
+# Coverage (if you're using test coverage tools)
+coverage/
+
+# Build folders (if using build tools like TypeScript)
+dist/
+build/
