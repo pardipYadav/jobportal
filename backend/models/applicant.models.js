@@ -4,20 +4,21 @@ const applicantSchema = new mongoose.Schema(
   {
     job: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "job",
+      ref: "Job",
       required: true,
     },
     applicant: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     status: {
       type: String,
       enum: ["pending", "accept", "reject"],
+      default: "pending",
     },
   },
   { timesstamps: true }
 );
 
-export const applicant = mongoose.model("Applicant", applicantSchema);
+export const Application = mongoose.model("Application", applicantSchema);
