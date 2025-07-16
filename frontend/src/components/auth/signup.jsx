@@ -9,6 +9,7 @@ import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 
+// profile Image uploading funtionality its still pending
 const SignUp = () => {
   const [input, setInput] = useState({
     fullname: "",
