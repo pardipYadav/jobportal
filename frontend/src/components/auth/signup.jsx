@@ -3,11 +3,14 @@ import Navbar from "../shared/Navbar";
 import { Input } from "../ui/input";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "@/redux/authSlice";
+import { Loader2 } from "lucide-react";
 
 // profile Image uploading funtionality its still pending
 const SignUp = () => {
@@ -18,10 +21,12 @@ const SignUp = () => {
     password: "",
     role: "",
   });
+  const { loading } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
   const eventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
-
+  const dispatch = useDispatch();
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
@@ -39,17 +44,19 @@ const SignUp = () => {
     }
     // console.log(formData);
     try {
+      dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
-      console.log(res);
       if (res.data.success) {
         toast.success(res.data.message);
+        navigate("/login");
       }
     } catch (error) {
       toast.error(`server error ${error.response.data.message}`);
-      console.log(error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
   return (
@@ -141,9 +148,16 @@ const SignUp = () => {
               />
             </div>
           </div>
-          <Button type="submit" className="w-full my-4">
-            Signup
-          </Button>
+          {loading ? (
+            <Button className="w-full my-4">
+              {" "}
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> please wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full my-4">
+              Signup
+            </Button>
+          )}
           <span className="text-sm">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-600">
