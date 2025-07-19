@@ -4,6 +4,7 @@ import Navbar from "./components/shared/Navbar";
 import Home from "./components/Home";
 import Login from "./components/auth/Login";
 import SignUp from "./components/auth/signup";
+import Jobs from "./components/Jobs";
 function App() {
   const appRouter = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ function App() {
     {
       path: "signup",
       element: <SignUp />,
+    },
+    {
+      path: "jobs",
+      element: <Jobs />,
     },
   ]);
   return (
