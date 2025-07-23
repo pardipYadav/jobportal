@@ -48,14 +48,15 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
     formData.append("bio", input.bio);
     formData.append("skills", input.skills);
     if (input.file) {
-      formData.append("file".input.file);
+      console.log("Selected file before sending:", input.file);
+      formData.append("file", input.file);
     }
     try {
       const res = await axios.post(
         `${USER_API_END_POINT}/profile/update`,
         formData,
         {
-          header: {
+          headers: {
             "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
