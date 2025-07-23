@@ -2,6 +2,7 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
   try {
@@ -40,7 +41,6 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  //   console.log(req.body);
   try {
     const { email, password, role } = req.body;
     if (!email || !password || !role) {
@@ -120,7 +120,6 @@ export const logout = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   const file = req.file;
-  console.log(req.file);
   try {
     const { fullname, email, phone, bio, skills } = req.body;
     const fileUri = getDataUri(file);
