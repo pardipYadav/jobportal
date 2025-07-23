@@ -19,6 +19,7 @@ const isAuthentication = async (req, res, next) => {
     }
 
     req.id = decode.userId;
+    console.log(req.id);
     next();
   } catch (error) {
     res.status(500).json({

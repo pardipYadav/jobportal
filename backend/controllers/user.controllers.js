@@ -1,6 +1,7 @@
 import { User } from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getDataUri from "../utils/datauri.js";
 
 export const register = async (req, res) => {
   try {
@@ -75,6 +76,7 @@ export const login = async (req, res) => {
     const token = await jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
+
     user = {
       _id: user._id,
       fullname: user.fullname,
@@ -87,12 +89,12 @@ export const login = async (req, res) => {
       .status(200)
       .cookie("token", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpsOnly: true,
-        sameSite: true,
+        httpsOnly: false,
+        sameSite: "strict",
       })
       .json({
         message: `welcome back ${user.fullname}`,
-        // user,
+        user,
         success: true,
       });
   } catch (error) {
@@ -117,8 +119,13 @@ export const logout = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
+  const file = req.file;
+  console.log(req.file);
   try {
-    const { fullname, email } = req.body;
+    const { fullname, email, phone, bio, skills } = req.body;
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
     if (!fullname || !email) {
       return res.status(201).json({
         message: "something is missing",
@@ -126,18 +133,34 @@ export const updateProfile = async (req, res) => {
       });
     }
     let user = await User.findOne({ email });
-    const userId = req.id;
     if (!user) {
       return res.status(201).json({
         message: "user does not exists",
         success: false,
       });
     }
-    user.fullname = fullname;
+    if (cloudResponse) {
+      user.profile.resume = cloudResponse.secure_url;
+      user.profile.resumeOriginalName = file.originalname;
+    }
+    let skillArray;
+    if (skills) {
+      skillArray = skills.split(",");
+    }
+    if (fullname) user.fullname = fullname;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (bio) user.profile.bio = bio;
+    if (skills) user.profile.skills = skillArray;
+
     await user.save();
     user = {
       _id: user._id,
       fullname: user.fullname,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      profile: user.profile,
     };
     return res.status(200).json({
       message: "profile successfully updated",
