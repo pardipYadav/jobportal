@@ -13,6 +13,10 @@ export const register = async (req, res) => {
         success: false,
       });
     }
+    const file = req.file;
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({
@@ -27,6 +31,9 @@ export const register = async (req, res) => {
       phone,
       password: hashPassword,
       role,
+      profile: {
+        profilePhoto: cloudResponse.secure_url,
+      },
     });
     res.status(201).json({
       message: "account created successfully",
@@ -107,6 +114,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    console.log("sdfds");
     return res.status(200).cookie("token", "", { maxAge: 0 }).json({
       message: "Logout successfully",
       success: true,

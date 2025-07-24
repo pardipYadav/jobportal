@@ -66,10 +66,10 @@ const Profile = () => {
           {isResume ? (
             <a
               target="blank"
-              href="https://.google.com"
+              href={user?.profile?.resume}
               className="text-blue-500 w-full hover:underline cursor-pointer"
             >
-              Resume
+              {user?.profile?.resumeOriginalName}
             </a>
           ) : (
             <span>N/A</span>

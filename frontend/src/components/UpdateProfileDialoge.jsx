@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { setUser } from "@/redux/authSlice";
 const UpdateProfileDialoge = ({ open, setOpen }) => {
   // const { loading } = useSelector((store) => store.auth);
-  const [loading, useLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   console.log(user?.profile?.resume);
@@ -29,14 +29,11 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
     skills: user?.profile?.skills?.map((skill) => skill) || "",
     file: user?.profile?.resume,
   });
-  console.log(user?.profile?.resume);
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
   const fileChangeHandler = (e) => {
-    // console.log("Files =>", e.target.files);
     const file = e.target.files?.[0];
-    // console.log("Selected file =>", file);
     setInput({ ...input, file });
   };
   const submitHandler = async (e) => {
@@ -48,10 +45,10 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
     formData.append("bio", input.bio);
     formData.append("skills", input.skills);
     if (input.file) {
-      console.log("Selected file before sending:", input.file);
       formData.append("file", input.file);
     }
     try {
+      setLoading(true);
       const res = await axios.post(
         `${USER_API_END_POINT}/profile/update`,
         formData,
@@ -67,9 +64,10 @@ const UpdateProfileDialoge = ({ open, setOpen }) => {
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(`forntend server error ${error}`);
-      // console.log(res);
       toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
+      setOpen(false);
     }
   };
   return (
