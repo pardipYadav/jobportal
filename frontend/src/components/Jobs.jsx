@@ -3,8 +3,12 @@ import Navbar from "./shared/Navbar";
 import FilterCard from "./FilterCard";
 import Job from "./Job";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 const Jobs = () => {
   const filterJobs = [1, 2, 3, 4, 5, 6];
+  // const { getAllJobs } = useSelector((store) => store.job);
+  const { allJobs } = useSelector((store) => store.job);
+
   return (
     <div>
       <Navbar />
@@ -13,12 +17,12 @@ const Jobs = () => {
           <div className="w-20%">
             <FilterCard />
           </div>
-          {filterJobs.length <= 0 ? (
+          {allJobs.length <= 0 ? (
             <span>Job not found</span>
           ) : (
             <div className="flex-1 h-[88vh] overflow-y-auto pb-5">
               <div className="grid grid-cols-3 gap-4">
-                {filterJobs.map((job) => (
+                {allJobs.map((job, index) => (
                   <motion.div
                     initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -26,7 +30,7 @@ const Jobs = () => {
                     transition={{ duration: 0.3 }}
                     key={job?._id}
                   >
-                    <Job job={job} />
+                    <Job key={index} job={job} />
                   </motion.div>
                 ))}
               </div>
