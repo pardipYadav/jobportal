@@ -1,26 +1,57 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { JOB_API_END_POINT } from "@/utils/constant";
+import { APPLICATION_API_END_POINT, JOB_API_END_POINT } from "@/utils/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { setSingleJob } from "@/redux/jobSlice";
+import { toast } from "sonner";
 const JobDesctription = () => {
-  const IsApplied = true;
+  // const IsApplied = true;
   const param = useParams();
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
+  const isInitiallyApplied =
+    singleJob?.applications.some((applications) => {
+      return applications?.applicant === user?._id;
+    }) || false;
+  const [IsApplied, setApplied] = useState(isInitiallyApplied);
   const jobId = param.id;
+  const applyhandler = async () => {
+    try {
+      const res = await axios.get(
+        `${APPLICATION_API_END_POINT}/apply/${jobId}`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        setApplied(true);
+        const updateSingleJob = {
+          ...singleJob,
+          applications: [...singleJob.applications, { applicant: user?.id }],
+        };
+        dispatch(setSingleJob(updateSingleJob));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log("frontend error: " + error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchSingleJob = async () => {
       const res = await axios.get(`${JOB_API_END_POINT}/get/${jobId}`, {
         withCredentials: true,
       });
-      console.log(res);
       if (res.data.success) {
         dispatch(setSingleJob(res.data.getJob));
+        setApplied(
+          res.data.getJob.applications.some(
+            (application) => application.applicant === user?._id
+          )
+        );
       }
     };
     fetchSingleJob();
@@ -43,6 +74,7 @@ const JobDesctription = () => {
           </div>
         </div>
         <Button
+          onClick={IsApplied ? null : applyhandler}
           disabled={IsApplied}
           className={`rounded-lg ${
             IsApplied
@@ -69,7 +101,9 @@ const JobDesctription = () => {
         </h1>
         <h1 className="font-bold my-1">
           Descrition:{" "}
-          <span className="pl-4 font-normal text-gray-800">Lorem Ipsum</span>
+          <span className="pl-4 font-normal text-gray-800">
+            {singleJob?.description}
+          </span>
         </h1>
         <h1 className="font-bold my-1">
           Experience:{" "}
@@ -85,11 +119,15 @@ const JobDesctription = () => {
         </h1>
         <h1 className="font-bold my-1">
           Total Applicants:{" "}
-          <span className="pl-4 font-normal text-gray-800">5</span>
+          <span className="pl-4 font-normal text-gray-800">
+            {singleJob?.applications?.length}
+          </span>
         </h1>
         <h1 className="font-bold my-1">
           Posted Date:{" "}
-          <span className="pl-4 font-normal text-gray-800">18-02-2025</span>
+          <span className="pl-4 font-normal text-gray-800">
+            {singleJob?.createdAt ? singleJob?.createdAt.split("T")[0] : "N/A"}
+          </span>
         </h1>
       </div>
     </div>

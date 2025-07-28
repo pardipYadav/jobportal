@@ -3,8 +3,9 @@ import { Job } from "../models/job.model.js";
 
 export const applyjob = async (req, res) => {
   try {
-    const userId = req.id;
+    let userId = req.id;
     const jobId = req.params.id;
+
     if (!jobId) {
       return res.status(401).json({
         message: "job Id is required",
@@ -23,20 +24,18 @@ export const applyjob = async (req, res) => {
       });
     }
     const job = await Job.findById(jobId);
+    console.log(job);
     if (!job) {
       return res.status(404).json({
         message: "job not found",
         success: false,
       });
     }
+
     const newApplication = await Application.create({
       job: jobId,
       applicant: userId,
     });
-    console.log(newApplication);
-    if (!Array.isArray(job.applications)) {
-      job.applications = [];
-    }
     job.applications.push(newApplication._id);
     await job.save();
     return res.status(200).json({

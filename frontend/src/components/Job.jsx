@@ -3,13 +3,25 @@ import { Button } from "./ui/button";
 import { Bookmark } from "lucide-react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 
 const Job = ({ job }) => {
   const navigate = useNavigate();
+  const dayAgoFunction = (mongoTime) => {
+    const createdAt = new data(mongoTime);
+    const currentDate = new data();
+    const timeDifferent = createdAt - currentDate;
+    return Math.floor(timeDifferent / (1000 * 24 * 60 * 60));
+  };
+
   return (
     <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
       <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-500">
+          {dayAgoFunction(job?.createdAt === 0)
+            ? "Added Today"
+            : `${dayAgoFunction(job?.createdAt)} days ago`}
+        </p>
         <Button variant="outline" className="rounded-full" size="icon">
           <Bookmark />
         </Button>
