@@ -42,7 +42,6 @@ const SignUp = () => {
     if (input.file) {
       formData.append("file", input.file);
     }
-    // console.log(formData);
     try {
       dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
@@ -128,12 +127,12 @@ const SignUp = () => {
                 <Input
                   type="radio"
                   name="role"
-                  value="recruiter"
-                  checked={input.role === "recruiter"}
+                  value="recuritor"
+                  checked={input.role === "recuritor"}
                   onChange={eventHandler}
                   className="cursor-pointer"
                 />
-                <Label htmlFor="r2">Recruiter</Label>
+                <Label htmlFor="r2">recuritor</Label>
               </div>
             </RadioGroup>
           </div>
